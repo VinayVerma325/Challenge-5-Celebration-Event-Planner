@@ -1,0 +1,40 @@
+{
+  "name": "celebration-event-planner",
+  "version": "1.0.0",
+  "description": "AI-powered Celebration & Event Planner for weddings, birthdays, and community events",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "node node_modules/concurrently/dist/bin/concurrently.js -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"node node_modules/tsx/dist/cli.mjs watch server/src/server.ts\" \"node node_modules/vite/bin/vite.js client\"",
+    "dev:server": "node node_modules/tsx/dist/cli.mjs watch server/src/server.ts",
+    "dev:client": "node node_modules/vite/bin/vite.js client",
+    "build": "node node_modules/typescript/bin/tsc --project server/tsconfig.json && node node_modules/vite/bin/vite.js build --config client/vite.config.ts client",
+    "build:server": "node node_modules/typescript/bin/tsc --project server/tsconfig.json",
+    "build:client": "node node_modules/vite/bin/vite.js build --config client/vite.config.ts client",
+    "start": "node server/dist/server.js",
+    "test": "node node_modules/vitest/vitest.mjs --config server/vitest.config.ts run && node node_modules/vitest/vitest.mjs --config client/vitest.config.ts run",
+    "test:server": "node node_modules/vitest/vitest.mjs --config server/vitest.config.ts run",
+    "test:client": "node node_modules/vitest/vitest.mjs --config client/vitest.config.ts run",
+    "test:e2e": "node node_modules/@playwright/test/cli.js test",
+    "lint": "node node_modules/typescript/bin/tsc --project server/tsconfig.json --noEmit && node node_modules/typescript/bin/tsc --project client/tsconfig.json --noEmit",
+    "lint:server": "node node_modules/typescript/bin/tsc --project server/tsconfig.json --noEmit",
+    "lint:client": "node node_modules/typescript/bin/tsc --project client/tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "mern",
+    "gemini-ai",
+    "event-planner",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "PromptWars Challenge 5 Candidate",
+  "license": "MIT"
+}
