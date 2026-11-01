@@ -39,3 +39,4 @@ Thumbs.db
 .eslintcache
 .vite/
 .temp/
+.db_data/

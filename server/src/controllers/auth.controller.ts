@@ -54,7 +54,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
     if (!user) {
       res.status(401).json({
         success: false,
-        message: 'Invalid email or password.'
+        message: 'No account found with this email. Please click "Create an account" below to register first.'
       });
       return;
     }
@@ -63,7 +63,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
     if (!isMatch) {
       res.status(401).json({
         success: false,
-        message: 'Invalid email or password.'
+        message: 'Incorrect password. Please verify your password and try again.'
       });
       return;
     }

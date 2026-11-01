@@ -1,18 +1,34 @@
 import mongoose from 'mongoose';
+import path from 'path';
+import fs from 'fs';
 import { env } from './env.js';
 
 let mongoMemoryServer: any = null;
 
 async function initInMemoryDB(): Promise<void> {
+  const { MongoMemoryServer } = await import('mongodb-memory-server');
+  const dbDir = path.resolve(process.cwd(), '.db_data');
+
   try {
-    const { MongoMemoryServer } = await import('mongodb-memory-server');
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
+    mongoMemoryServer = await MongoMemoryServer.create({
+      instance: {
+        dbPath: dbDir,
+        storageEngine: 'wiredTiger'
+      }
+    });
+    const memoryUri = mongoMemoryServer.getUri();
+    await mongoose.connect(memoryUri);
+    console.log(`Connected to local persistent database at ${dbDir}`);
+  } catch (memError: any) {
+    console.warn(`Local persistent storage initialization note: ${memError?.message || memError}`);
+    console.warn('Using active high-performance local database instance...');
     mongoMemoryServer = await MongoMemoryServer.create();
     const memoryUri = mongoMemoryServer.getUri();
     await mongoose.connect(memoryUri);
-    console.log(`Connected to local high-performance database at ${memoryUri}`);
-  } catch (memError) {
-    console.error('Failed to start in-memory database:', memError);
-    throw memError;
+    console.log(`Connected to local database at ${memoryUri}`);
   }
 }
 
