@@ -12,12 +12,26 @@ interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEventCreated?: (event: EventItem) => void;
+  initialData?: Partial<{
+    title: string;
+    eventType: EventType;
+    date: string;
+    location: string;
+    guestCount: number;
+    budget: number;
+    currency: string;
+    theme: string;
+    dietaryRequirements: string[];
+    accessibilityRequirements: string[];
+    notes: string;
+  }>;
 }
 
 export const CreateEventModal: React.FC<CreateEventModalProps> = ({
   isOpen,
   onClose,
-  onEventCreated
+  onEventCreated,
+  initialData
 }) => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +50,16 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
     accessibilityRequirements: [] as string[],
     notes: ''
   });
+
+  // Sync initialData when modal opens
+  React.useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialData
+      }));
+    }
+  }, [isOpen, initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

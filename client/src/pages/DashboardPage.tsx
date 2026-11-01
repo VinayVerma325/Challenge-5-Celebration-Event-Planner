@@ -50,6 +50,7 @@ export const DashboardPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [initialEventData, setInitialEventData] = useState<any>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
   const [now, setNow] = useState(new Date());
 
@@ -1044,8 +1045,18 @@ export const DashboardPage: React.FC = () => {
       <AiBrainstormModal
         isOpen={isAiBrainstormOpen}
         onClose={() => setIsAiBrainstormOpen(false)}
-        onSelectIdea={(_theme, _eventType) => {
+        onSelectIdea={(theme, eventType) => {
           setIsAiBrainstormOpen(false);
+          const cleanType = ['wedding', 'birthday', 'anniversary', 'community'].includes(
+            eventType.toLowerCase()
+          )
+            ? eventType.toLowerCase()
+            : 'other';
+          setInitialEventData({
+            title: theme,
+            theme: theme,
+            eventType: cleanType
+          });
           setIsCreateModalOpen(true);
         }}
       />
@@ -1173,7 +1184,11 @@ export const DashboardPage: React.FC = () => {
       {/* Plan New Event Modal (Tile 8 & Dock +) */}
       <CreateEventModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setInitialEventData(undefined);
+        }}
+        initialData={initialEventData}
         onEventCreated={(evt) => navigate(`/events/${evt._id}`)}
       />
     </div>

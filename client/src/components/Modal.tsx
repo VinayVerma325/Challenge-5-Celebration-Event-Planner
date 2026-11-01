@@ -8,6 +8,7 @@ interface ModalProps {
   description?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  closeOnBackdropClick?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -16,7 +17,8 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   description,
   children,
-  maxWidth = 'lg'
+  maxWidth = 'lg',
+  closeOnBackdropClick = false
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isMouseDownOnBackdrop = useRef(false);
@@ -63,11 +65,13 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-hidden"
       onMouseDown={(e) => {
+        if (!closeOnBackdropClick) return;
         isMouseDownOnBackdrop.current = e.target === e.currentTarget;
       }}
       onMouseUp={(e) => {
+        if (!closeOnBackdropClick) return;
         if (isMouseDownOnBackdrop.current && e.target === e.currentTarget) {
           onClose();
         }
@@ -82,9 +86,9 @@ export const Modal: React.FC<ModalProps> = ({
         aria-describedby={description ? descId : undefined}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white w-full ${maxWidthClasses[maxWidth]} rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all motion-reduce:transition-none my-8`}
+        className={`bg-white w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] flex flex-col rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all motion-reduce:transition-none my-auto`}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
           <div>
             <h2 id={titleId} className="text-lg font-bold text-slate-900">
               {title}
@@ -99,12 +103,12 @@ export const Modal: React.FC<ModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="text-slate-400 hover:text-slate-600 rounded-lg p-1.5 hover:bg-slate-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+            className="text-slate-400 hover:text-slate-600 rounded-xl p-2 hover:bg-slate-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer"
           >
             <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
-        <div className="p-6 max-h-[80vh] overflow-y-auto">{children}</div>
+        <div className="p-6 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );
