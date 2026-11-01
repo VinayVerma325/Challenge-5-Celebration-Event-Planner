@@ -224,6 +224,21 @@ export const DashboardPage: React.FC = () => {
     setIsEditingNote(false);
   };
 
+  const upcomingEvents = data?.upcomingEvents || [];
+  const urgentTasks = data?.urgentTasks || [];
+
+  // Filter events based on search query (memoized to prevent redundant calculations)
+  const filteredEvents = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return upcomingEvents;
+    return upcomingEvents.filter(
+      (evt) =>
+        evt.title.toLowerCase().includes(q) ||
+        evt.location.toLowerCase().includes(q) ||
+        evt.eventType.toLowerCase().includes(q)
+    );
+  }, [upcomingEvents, searchQuery]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-100/80 p-6 sm:p-10 max-w-7xl mx-auto space-y-6">
@@ -242,21 +257,6 @@ export const DashboardPage: React.FC = () => {
     pendingTasks: 0,
     overdueTasks: 0
   };
-
-  const upcomingEvents = data?.upcomingEvents || [];
-  const urgentTasks = data?.urgentTasks || [];
-
-  // Filter events based on search query (memoized to prevent redundant calculations)
-  const filteredEvents = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
-    if (!q) return upcomingEvents;
-    return upcomingEvents.filter(
-      (evt) =>
-        evt.title.toLowerCase().includes(q) ||
-        evt.location.toLowerCase().includes(q) ||
-        evt.eventType.toLowerCase().includes(q)
-    );
-  }, [upcomingEvents, searchQuery]);
 
   // Time & Greeting calculations (without causing 1s re-renders)
   const currentHour = new Date().getHours();
