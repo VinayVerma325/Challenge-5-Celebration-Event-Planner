@@ -19,9 +19,7 @@
     "test:server": "node node_modules/vitest/vitest.mjs --config server/vitest.config.ts run",
     "test:client": "node node_modules/vitest/vitest.mjs --config client/vitest.config.ts run",
     "test:e2e": "node node_modules/@playwright/test/cli.js test",
-    "lint": "node node_modules/typescript/bin/tsc --project server/tsconfig.json --noEmit && node node_modules/typescript/bin/tsc --project client/tsconfig.json --noEmit",
-    "lint:server": "node node_modules/typescript/bin/tsc --project server/tsconfig.json --noEmit",
-    "lint:client": "node node_modules/typescript/bin/tsc --project client/tsconfig.json --noEmit"
+    "lint": "npm run --workspace=server lint && npm run --workspace=client lint"
   },
   "dependencies": {
     "typescript": "^5.7.3",

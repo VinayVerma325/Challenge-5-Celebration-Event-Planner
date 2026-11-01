@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -55,7 +55,7 @@ export function createApp(): Express {
   const clientDist = path.resolve(process.cwd(), 'client/dist');
   if (fs.existsSync(clientDist)) {
     app.use(express.static(clientDist));
-    app.get('*', (req: Request, res: Response, next) => {
+    app.get('*', (req: Request, res: Response, next: NextFunction) => {
       if (req.path.startsWith('/api')) return next();
       res.sendFile(path.join(clientDist, 'index.html'));
     });
