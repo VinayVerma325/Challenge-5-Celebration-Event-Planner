@@ -2,6 +2,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import compression from 'compression';
 import path from 'path';
 import fs from 'fs';
 import { env } from './config/env.js';
@@ -20,6 +21,7 @@ export function createApp(): Express {
 
   // Security headers & CORS middleware
   app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(compression());
   app.use(
     cors({
       origin: true,
@@ -51,10 +53,22 @@ export function createApp(): Express {
   app.use('/api/events/:eventId/ai', aiRoutes);
   app.use('/api/dashboard', dashboardRoutes);
 
-  // Serve static client assets if built (for all-in-one cloud deployments)
+  // Serve static client assets if built (for high-efficiency cloud deployments)
   const clientDist = path.resolve(process.cwd(), 'client/dist');
   if (fs.existsSync(clientDist)) {
-    app.use(express.static(clientDist));
+    app.use(
+      express.static(clientDist, {
+        maxAge: '1y',
+        etag: true,
+        setHeaders: (res, filePath) => {
+          if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+          } else {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          }
+        }
+      })
+    );
     app.get('*', (req: Request, res: Response, next: NextFunction) => {
       if (req.path.startsWith('/api')) return next();
       res.sendFile(path.join(clientDist, 'index.html'));

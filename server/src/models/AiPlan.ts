@@ -70,4 +70,6 @@ const aiPlanSchema = new Schema<IAiPlan>(
   }
 );
 
+aiPlanSchema.index({ eventId: 1, createdAt: -1 });
+
 export const AiPlan: Model<IAiPlan> = mongoose.model<IAiPlan>('AiPlan', aiPlanSchema);
