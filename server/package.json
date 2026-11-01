@@ -4,8 +4,8 @@
   "description": "Backend API for Celebration & Event Planner with Gemini GenAI integration",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "node ../node_modules/tsx/dist/cli.mjs watch src/server.ts",
-    "build": "node ../node_modules/typescript/bin/tsc",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
     "start": "node dist/server.js",
     "test": "node ../node_modules/vitest/vitest.mjs run",
     "test:watch": "node ../node_modules/vitest/vitest.mjs",

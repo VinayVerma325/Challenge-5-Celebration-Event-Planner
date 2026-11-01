@@ -11,9 +11,9 @@
     "dev": "node node_modules/concurrently/dist/bin/concurrently.js -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"node node_modules/tsx/dist/cli.mjs watch server/src/server.ts\" \"node node_modules/vite/bin/vite.js client\"",
     "dev:server": "node node_modules/tsx/dist/cli.mjs watch server/src/server.ts",
     "dev:client": "node node_modules/vite/bin/vite.js client",
-    "build": "node node_modules/typescript/bin/tsc --project server/tsconfig.json && node node_modules/vite/bin/vite.js build --config client/vite.config.ts client",
-    "build:server": "node node_modules/typescript/bin/tsc --project server/tsconfig.json",
-    "build:client": "node node_modules/vite/bin/vite.js build --config client/vite.config.ts client",
+    "build": "node scripts/build.cjs",
+    "build:server": "node scripts/build.cjs",
+    "build:client": "node scripts/build.cjs",
     "start": "node server/dist/server.js",
     "test": "node node_modules/vitest/vitest.mjs --config server/vitest.config.ts run && node node_modules/vitest/vitest.mjs --config client/vitest.config.ts run",
     "test:server": "node node_modules/vitest/vitest.mjs --config server/vitest.config.ts run",
@@ -22,6 +22,10 @@
     "lint": "node node_modules/typescript/bin/tsc --project server/tsconfig.json --noEmit && node node_modules/typescript/bin/tsc --project client/tsconfig.json --noEmit",
     "lint:server": "node node_modules/typescript/bin/tsc --project server/tsconfig.json --noEmit",
     "lint:client": "node node_modules/typescript/bin/tsc --project client/tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
