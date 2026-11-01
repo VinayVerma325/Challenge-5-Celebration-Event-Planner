@@ -14,9 +14,9 @@ export async function getDashboardSummary(
     const now = new Date();
 
     const [allEvents, allExpenses, allTasks] = await Promise.all([
-      Event.find({ userId }).sort({ date: 1 }),
-      Expense.find({ userId }),
-      Task.find({ userId }).sort({ dueDate: 1 })
+      Event.find({ userId }).sort({ date: 1 }).lean(),
+      Expense.find({ userId }).lean(),
+      Task.find({ userId }).sort({ dueDate: 1 }).lean()
     ]);
 
     const totalEvents = allEvents.length;

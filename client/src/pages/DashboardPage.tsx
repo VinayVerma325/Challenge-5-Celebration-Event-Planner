@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Calendar,
@@ -246,13 +246,17 @@ export const DashboardPage: React.FC = () => {
   const upcomingEvents = data?.upcomingEvents || [];
   const urgentTasks = data?.urgentTasks || [];
 
-  // Filter events based on search query
-  const filteredEvents = upcomingEvents.filter(
-    (evt) =>
-      evt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      evt.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      evt.eventType.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter events based on search query (memoized to prevent redundant calculations)
+  const filteredEvents = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return upcomingEvents;
+    return upcomingEvents.filter(
+      (evt) =>
+        evt.title.toLowerCase().includes(q) ||
+        evt.location.toLowerCase().includes(q) ||
+        evt.eventType.toLowerCase().includes(q)
+    );
+  }, [upcomingEvents, searchQuery]);
 
   // Time & Greeting calculations (without causing 1s re-renders)
   const currentHour = new Date().getHours();

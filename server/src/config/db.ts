@@ -58,7 +58,9 @@ export async function connectDB(): Promise<void> {
   try {
     // Attempt connecting to the configured MONGODB_URI
     await mongoose.connect(cleanedUri, {
-      serverSelectionTimeoutMS: 4000
+      serverSelectionTimeoutMS: 4000,
+      maxPoolSize: 20,
+      minPoolSize: 5
     });
     console.log(`Connected to MongoDB Atlas cluster at ${cleanedUri.split('@')[1] || cleanedUri}`);
   } catch (error: any) {

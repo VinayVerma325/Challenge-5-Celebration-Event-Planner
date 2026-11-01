@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
-import { Task } from '../models/Task.js';
+import mongoose, { FilterQuery } from 'mongoose';
+import { Task, ITask } from '../models/Task.js';
 import { Event } from '../models/Event.js';
 import { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import { calculateTaskMetrics } from '../services/task.service.js';
@@ -21,19 +21,21 @@ export async function listTasks(
       return;
     }
 
-    const event = await Event.findOne({ _id: eventId, userId });
+    const event = await Event.findOne({ _id: eventId, userId }).select('_id').lean();
     if (!event) {
       res.status(404).json({ success: false, message: 'Event not found or unauthorized' });
       return;
     }
 
-    const query: any = { eventId, userId };
-    if (status && typeof status === 'string') query.status = status;
-    if (priority && typeof priority === 'string') query.priority = priority;
+    const query: FilterQuery<ITask> = { eventId, userId };
+    if (status && typeof status === 'string') query.status = status as any;
+    if (priority && typeof priority === 'string') query.priority = priority as any;
     if (category && typeof category === 'string') query.category = category;
 
-    const tasks = await Task.find(query).sort({ dueDate: 1, createdAt: -1 });
-    const allEventTasks = await Task.find({ eventId, userId });
+    const [tasks, allEventTasks] = await Promise.all([
+      Task.find(query).sort({ dueDate: 1, createdAt: -1 }).lean(),
+      Task.find({ eventId, userId }).lean()
+    ]);
     const taskMetrics = calculateTaskMetrics(allEventTasks);
 
     res.status(200).json({

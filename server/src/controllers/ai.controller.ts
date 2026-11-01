@@ -80,7 +80,7 @@ export async function getLatestPlan(
       return;
     }
 
-    const latestPlanDoc = await AiPlan.findOne({ eventId, userId }).sort({ createdAt: -1 });
+    const latestPlanDoc = await AiPlan.findOne({ eventId, userId }).sort({ createdAt: -1 }).lean();
 
     if (!latestPlanDoc) {
       res.status(404).json({
@@ -127,7 +127,7 @@ export async function applyPlan(
     if (customPlan) {
       planToApply = customPlan;
     } else {
-      const latest = await AiPlan.findOne({ eventId, userId }).sort({ createdAt: -1 });
+      const latest = await AiPlan.findOne({ eventId, userId }).sort({ createdAt: -1 }).lean();
       if (!latest) {
         res.status(400).json({
           success: false,

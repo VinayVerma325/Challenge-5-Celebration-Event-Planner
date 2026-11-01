@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
-import { Vendor } from '../models/Vendor.js';
+import mongoose, { FilterQuery } from 'mongoose';
+import { Vendor, IVendor } from '../models/Vendor.js';
 import { Event } from '../models/Event.js';
 import { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import { getParam } from '../utils/params.js';
@@ -20,17 +20,17 @@ export async function listVendors(
       return;
     }
 
-    const event = await Event.findOne({ _id: eventId, userId });
+    const event = await Event.findOne({ _id: eventId, userId }).select('_id').lean();
     if (!event) {
       res.status(404).json({ success: false, message: 'Event not found or unauthorized' });
       return;
     }
 
-    const query: any = { eventId, userId };
+    const query: FilterQuery<IVendor> = { eventId, userId };
     if (category && typeof category === 'string') query.category = category;
-    if (status && typeof status === 'string') query.status = status;
+    if (status && typeof status === 'string') query.status = status as any;
 
-    const vendors = await Vendor.find(query).sort({ category: 1, quoteAmount: 1 });
+    const vendors = await Vendor.find(query).sort({ category: 1, quoteAmount: 1 }).lean();
 
     // Calculate vendor breakdown summary
     let totalQuotes = 0;
@@ -69,7 +69,7 @@ export async function createVendor(
       return;
     }
 
-    const event = await Event.findOne({ _id: eventId, userId });
+    const event = await Event.findOne({ _id: eventId, userId }).select('_id').lean();
     if (!event) {
       res.status(404).json({ success: false, message: 'Event not found or unauthorized' });
       return;

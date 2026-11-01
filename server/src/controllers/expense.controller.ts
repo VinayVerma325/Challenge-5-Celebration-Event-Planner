@@ -20,13 +20,13 @@ export async function listExpenses(
       return;
     }
 
-    const event = await Event.findOne({ _id: eventId, userId });
+    const event = await Event.findOne({ _id: eventId, userId }).select('budget').lean();
     if (!event) {
       res.status(404).json({ success: false, message: 'Event not found or unauthorized' });
       return;
     }
 
-    const expenses = await Expense.find({ eventId, userId }).sort({ createdAt: -1 });
+    const expenses = await Expense.find({ eventId, userId }).sort({ createdAt: -1 }).lean();
     const budgetSummary = calculateBudgetMetrics(event.budget, expenses);
 
     res.status(200).json({
@@ -54,7 +54,7 @@ export async function createExpense(
       return;
     }
 
-    const event = await Event.findOne({ _id: eventId, userId });
+    const event = await Event.findOne({ _id: eventId, userId }).select('_id').lean();
     if (!event) {
       res.status(404).json({ success: false, message: 'Event not found or unauthorized' });
       return;

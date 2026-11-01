@@ -11,7 +11,7 @@ import {
   LayoutDashboard
 } from 'lucide-react';
 import { eventService } from '../services/event.service.js';
-import { EventItem, EventType } from '../types/index.js';
+import { EventItem, EventType, EventStatus } from '../types/index.js';
 import { Button } from '../components/Button.js';
 import { Modal } from '../components/Modal.js';
 import { Input } from '../components/Input.js';
@@ -51,7 +51,7 @@ export const EventDetailPage: React.FC = () => {
     budget: 5000,
     currency: 'USD',
     theme: '',
-    status: 'planning' as any
+    status: 'planning' as EventStatus
   });
 
   const loadEvent = async () => {
@@ -317,7 +317,7 @@ export const EventDetailPage: React.FC = () => {
               { value: 'cancelled', label: 'Cancelled' }
             ]}
             value={editFormData.status}
-            onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+            onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value as EventStatus })}
           />
 
           <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">

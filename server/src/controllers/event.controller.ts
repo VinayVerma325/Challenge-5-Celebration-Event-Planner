@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
-import { Event } from '../models/Event.js';
+import mongoose, { FilterQuery } from 'mongoose';
+import { Event, IEvent } from '../models/Event.js';
 import { Expense } from '../models/Expense.js';
 import { Task } from '../models/Task.js';
 import { Vendor } from '../models/Vendor.js';
@@ -17,22 +17,22 @@ export async function listEvents(
     const userId = req.user!._id;
     const { type, status, sort } = req.query;
 
-    const query: any = { userId };
+    const query: FilterQuery<IEvent> = { userId };
     if (type && typeof type === 'string') {
-      query.eventType = type;
+      query.eventType = type as any;
     }
     if (status && typeof status === 'string') {
-      query.status = status;
+      query.status = status as any;
     }
 
-    let sortOption: any = { date: 1 }; // default upcoming first
+    let sortOption: Record<string, 1 | -1> = { date: 1 }; // default upcoming first
     if (sort === 'newest') {
       sortOption = { createdAt: -1 };
     } else if (sort === 'budget_desc') {
       sortOption = { budget: -1 };
     }
 
-    const events = await Event.find(query).sort(sortOption);
+    const events = await Event.find(query).sort(sortOption).lean();
 
     res.status(200).json({
       success: true,
@@ -79,7 +79,7 @@ export async function getEventById(
       return;
     }
 
-    const event = await Event.findOne({ _id: id, userId });
+    const event = await Event.findOne({ _id: id, userId }).lean();
     if (!event) {
       res.status(404).json({ success: false, message: 'Event not found' });
       return;

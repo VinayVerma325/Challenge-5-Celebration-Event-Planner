@@ -21,7 +21,7 @@ export function createApp(): Express {
 
   // Security headers & CORS middleware
   app.use(helmet({ contentSecurityPolicy: false }));
-  app.use(compression());
+  app.use(compression({ threshold: 512 }));
   app.use(
     cors({
       origin: true,
