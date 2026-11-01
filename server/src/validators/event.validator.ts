@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 export const createEventSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters').max(120),
-  eventType: z.enum(['wedding', 'birthday', 'anniversary', 'community', 'other']),
+  eventType: z.preprocess(
+    (val) => (typeof val === 'string' ? val.toLowerCase() : val),
+    z.enum(['wedding', 'birthday', 'anniversary', 'community', 'other'])
+  ),
   date: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Valid event date is required'
   }),

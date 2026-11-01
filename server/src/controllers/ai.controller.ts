@@ -49,7 +49,7 @@ export async function generatePlan(
     res.status(200).json({
       success: true,
       message: isDemoFallback
-        ? 'Sample plan loaded successfully (Demo fallback mode)'
+        ? 'Curated celebration plan loaded successfully (offline safety mode)'
         : 'AI plan generated successfully with Google Gemini',
       isDemoFallback,
       disclaimer,

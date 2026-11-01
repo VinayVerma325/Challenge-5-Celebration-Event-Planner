@@ -24,7 +24,7 @@ export const Select: React.FC<SelectProps> = ({
   const errorId = `${id}-error`;
 
   return (
-    <div className="w-full">
+    <div className="w-full" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
       {label && (
         <label
           htmlFor={id}

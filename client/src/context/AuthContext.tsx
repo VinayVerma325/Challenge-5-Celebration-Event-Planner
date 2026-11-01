@@ -66,13 +66,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const quickDemoLogin = async () => {
-    const demoEmail = 'evaluator@promptwars.org';
+    const demoEmail = 'guest@celebrationplanner.io';
     const demoPassword = 'Password123!';
     try {
       await login(demoEmail, demoPassword);
     } catch {
       // If demo user doesn't exist yet, register it
-      await register('Evaluator Demo User', demoEmail, demoPassword);
+      await register('Guest Host', demoEmail, demoPassword);
     }
   };
 

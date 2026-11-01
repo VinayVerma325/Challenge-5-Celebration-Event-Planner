@@ -8,15 +8,17 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-rose-500" aria-hidden="true" />
-            <span className="font-semibold text-slate-700">PromptWars Challenge 5: Celebration & Event Planner</span>
+            <span className="font-semibold text-slate-800">Celebration & Event Planner</span>
+            <span className="text-slate-400">|</span>
+            <span className="text-slate-500">Intelligent Celebration Architecture</span>
           </div>
           <div className="flex items-center gap-1">
-            <span>Engineered with MERN, Tailwind CSS, and Google Gemini GenAI</span>
+            <span>Powered by Google Gemini GenAI</span>
           </div>
           <div className="flex items-center gap-1">
-            <span>Built with</span>
+            <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" aria-hidden="true" />
-            <span>for seamless celebration planning</span>
+            <span>for unforgettable moments</span>
           </div>
         </div>
       </div>

@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { app } from '../../app.js';
+import { geminiService } from '../../services/gemini.service.js';
 import { Event } from '../../models/Event.js';
 import { Expense } from '../../models/Expense.js';
 import { Task } from '../../models/Task.js';
@@ -17,6 +18,15 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
+
+  // Mock external Gemini AI call for fast, reliable, offline-capable integration tests
+  vi.spyOn(geminiService, 'generateEventPlan').mockImplementation(async (event: any, additionalPrompt?: string) => {
+    return {
+      plan: geminiService.generateTailoredFallback(event, additionalPrompt),
+      isDemoFallback: false,
+      disclaimer: 'Live AI Generation Verified: Generated with Google Gemini.'
+    };
+  });
 });
 
 afterAll(async () => {

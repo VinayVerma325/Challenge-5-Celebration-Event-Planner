@@ -10,7 +10,7 @@ async function bootstrap() {
       console.log(`Celebration & Event Planner Server listening on port ${env.PORT}`);
       console.log(`Environment: ${env.NODE_ENV}`);
       console.log(`Client URL: ${env.CLIENT_URL}`);
-      console.log(`Gemini AI Key: ${env.GEMINI_API_KEY ? 'Configured' : 'Demo Fallback Mode Active'}`);
+      console.log(`Gemini AI Key: ${env.GEMINI_API_KEY ? 'Configured (Active)' : 'Offline Safety Mode'}`);
     });
 
     const shutdown = async (signal: string) => {

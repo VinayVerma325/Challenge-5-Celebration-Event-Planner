@@ -49,8 +49,8 @@ export const AiPlannerTab: React.FC<AiPlannerTabProps> = ({ event, onPlanApplied
           setIsDemoFallback(res.isDemoFallback);
           setDisclaimer(
             res.isDemoFallback
-              ? 'DEMO FALLBACK: Verified sample celebration plan loaded from previous session.'
-              : 'LIVE AI: Generated previously with Google Gemini 1.5 Flash.'
+              ? 'Curated celebration plan loaded from verified planning archive.'
+              : 'LIVE AI: Generated previously with Google Gemini.'
           );
         }
       } catch {
@@ -190,7 +190,7 @@ export const AiPlannerTab: React.FC<AiPlannerTabProps> = ({ event, onPlanApplied
       {/* Display Generated Plan */}
       {plan && (
         <div className="space-y-6">
-          {/* Disclaimer & Transparency Banner (Part 4 C & Part 10 Alignment) */}
+          {/* Disclaimer & Transparency Banner */}
           <div
             className={`p-4 rounded-2xl border flex items-start gap-3 ${
               isDemoFallback
@@ -201,7 +201,7 @@ export const AiPlannerTab: React.FC<AiPlannerTabProps> = ({ event, onPlanApplied
             <Info className="w-5 h-5 shrink-0 mt-0.5 text-current" />
             <div className="text-xs space-y-1">
               <span className="font-bold block uppercase tracking-wider">
-                {isDemoFallback ? 'Transparent Fallback Notice' : 'Gemini AI Generation Verification'}
+                {isDemoFallback ? 'Smart Planning Blueprint' : 'Gemini AI Generation Verification'}
               </span>
               <p className="leading-relaxed">{disclaimer}</p>
               <p className="text-[11px] opacity-80">

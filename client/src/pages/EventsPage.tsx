@@ -11,15 +11,13 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { eventService } from '../services/event.service.js';
-import { EventItem, EventType } from '../types/index.js';
+import { EventItem } from '../types/index.js';
 import { Button } from '../components/Button.js';
 import { Card } from '../components/Card.js';
-import { Input } from '../components/Input.js';
-import { Select } from '../components/Select.js';
-import { Modal } from '../components/Modal.js';
 import { EmptyState } from '../components/EmptyState.js';
 import { LoadingSkeleton } from '../components/LoadingSkeleton.js';
 import { Alert } from '../components/Alert.js';
+import { CreateEventModal } from '../components/CreateEventModal.js';
 import { formatCurrency, formatDate, getEventTypeBadge } from '../utils/formatters.js';
 
 export const EventsPage: React.FC = () => {
@@ -37,22 +35,6 @@ export const EventsPage: React.FC = () => {
 
   // Create Event Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    eventType: 'wedding' as EventType,
-    date: '',
-    location: '',
-    guestCount: 50,
-    budget: 5000,
-    currency: 'USD',
-    theme: 'Elegant & Modern',
-    dietaryRequirements: [] as string[],
-    accessibilityRequirements: [] as string[],
-    notes: ''
-  });
 
   useEffect(() => {
     if (searchParams.get('action') === 'new') {
@@ -80,55 +62,6 @@ export const EventsPage: React.FC = () => {
   useEffect(() => {
     loadEvents();
   }, []);
-
-  const handleCreateEvent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError(null);
-
-    if (!newEvent.title.trim()) {
-      setFormError('Please provide an event title');
-      return;
-    }
-    if (!newEvent.date) {
-      setFormError('Please select a valid event date');
-      return;
-    }
-    if (!newEvent.location.trim()) {
-      setFormError('Please specify the event location');
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const res = await eventService.create(newEvent);
-      if (res.success) {
-        setIsModalOpen(false);
-        navigate(`/events/${res.event._id}`);
-      }
-    } catch (err: any) {
-      setFormError(err.message || 'Failed to create event');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const toggleDietary = (item: string) => {
-    setNewEvent((prev) => ({
-      ...prev,
-      dietaryRequirements: prev.dietaryRequirements.includes(item)
-        ? prev.dietaryRequirements.filter((d) => d !== item)
-        : [...prev.dietaryRequirements, item]
-    }));
-  };
-
-  const toggleAccessibility = (item: string) => {
-    setNewEvent((prev) => ({
-      ...prev,
-      accessibilityRequirements: prev.accessibilityRequirements.includes(item)
-        ? prev.accessibilityRequirements.filter((a) => a !== item)
-        : [...prev.accessibilityRequirements, item]
-    }));
-  };
 
   // Filtered Events
   const filteredEvents = events.filter((evt) => {
@@ -291,169 +224,11 @@ export const EventsPage: React.FC = () => {
       )}
 
       {/* Create Event Modal */}
-      <Modal
+      <CreateEventModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Create New Celebration"
-        description="Provide key parameters to organize and generate AI assistance"
-        maxWidth="xl"
-      >
-        {formError && <Alert type="error" message={formError} className="mb-4" />}
-
-        <form onSubmit={handleCreateEvent} className="space-y-4">
-          <Input
-            label="Event Title"
-            required
-            placeholder="e.g. Maya's 30th Birthday Soirée or Summer Community Picnic"
-            value={newEvent.title}
-            onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Select
-              label="Event Type"
-              options={[
-                { value: 'wedding', label: 'Wedding' },
-                { value: 'birthday', label: 'Birthday' },
-                { value: 'anniversary', label: 'Anniversary' },
-                { value: 'community', label: 'Community Event' },
-                { value: 'other', label: 'Other Celebration' }
-              ]}
-              value={newEvent.eventType}
-              onChange={(e) => setNewEvent({ ...newEvent, eventType: e.target.value as EventType })}
-            />
-
-            <Input
-              label="Celebration Date"
-              type="date"
-              required
-              value={newEvent.date}
-              onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Location / Venue"
-              required
-              placeholder="e.g. Central City Botanical Garden"
-              value={newEvent.location}
-              onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-            />
-
-            <Input
-              label="Estimated Guests"
-              type="number"
-              min={1}
-              required
-              value={newEvent.guestCount}
-              onChange={(e) => setNewEvent({ ...newEvent, guestCount: parseInt(e.target.value) || 1 })}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="sm:col-span-2">
-              <Input
-                label="Planned Budget"
-                type="number"
-                min={0}
-                required
-                value={newEvent.budget}
-                onChange={(e) => setNewEvent({ ...newEvent, budget: parseFloat(e.target.value) || 0 })}
-              />
-            </div>
-            <Select
-              label="Currency"
-              options={[
-                { value: 'USD', label: 'USD ($)' },
-                { value: 'EUR', label: 'EUR (€)' },
-                { value: 'GBP', label: 'GBP (£)' },
-                { value: 'INR', label: 'INR (₹)' },
-                { value: 'CAD', label: 'CAD ($)' },
-                { value: 'AUD', label: 'AUD ($)' }
-              ]}
-              value={newEvent.currency}
-              onChange={(e) => setNewEvent({ ...newEvent, currency: e.target.value })}
-            />
-          </div>
-
-          <Input
-            label="Theme & Style Preferences"
-            placeholder="e.g. Boho Rustic, Tropical Sunset, Vintage Gold, Clean Minimalist"
-            value={newEvent.theme}
-            onChange={(e) => setNewEvent({ ...newEvent, theme: e.target.value })}
-          />
-
-          {/* Dietary Requirements Selection */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Dietary Considerations
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Nut-Free', 'Dairy-Free'].map(
-                (item) => {
-                  const isSelected = newEvent.dietaryRequirements.includes(item);
-                  return (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => toggleDietary(item)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                        isSelected
-                          ? 'bg-rose-100 border-rose-400 text-rose-800'
-                          : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  );
-                }
-              )}
-            </div>
-          </div>
-
-          {/* Accessibility Requirements Selection */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Accessibility Accommodations
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {[
-                'Wheelchair Ramp Access',
-                'Accessible Restrooms',
-                'Sign Language Interpreter',
-                'Low-Sensory Quiet Zone',
-                'Elevator Access'
-              ].map((item) => {
-                const isSelected = newEvent.accessibilityRequirements.includes(item);
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => toggleAccessibility(item)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                      isSelected
-                        ? 'bg-purple-100 border-purple-400 text-purple-800'
-                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                    }`}
-                  >
-                    {item}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              Create Event & Open Planner
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        onEventCreated={(evt) => navigate(`/events/${evt._id}`)}
+      />
     </div>
   );
 };

@@ -35,6 +35,13 @@ export async function request<T>(
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
+    if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+      localStorage.removeItem('celebration_token');
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+        window.location.href = '/login';
+      }
+    }
+
     throw new ApiError(
       data.message || 'An error occurred while communicating with the server.',
       response.status,

@@ -9,10 +9,16 @@ test.describe('End-to-End User Journey: Celebration & Event Planner', () => {
     await expect(page).toHaveURL(/.*login/);
     await expect(page.locator('h1')).toContainText('Welcome Back');
 
-    // 2. Perform One-Click Evaluator Sign-In
-    const evaluatorButton = page.getByRole('button', { name: /one-click evaluator sign-in/i });
-    await expect(evaluatorButton).toBeVisible();
-    await evaluatorButton.click();
+    // 2. Perform Account Registration & Sign-In
+    await page.getByRole('link', { name: /create an account/i }).click();
+    await expect(page).toHaveURL(/.*register/);
+    await expect(page.locator('h1')).toContainText('Create Account');
+
+    const randomSuffix = Math.floor(Math.random() * 10000);
+    await page.getByLabel(/full name/i).fill('Sophia Carter');
+    await page.getByLabel(/email address/i).fill(`sophia_${randomSuffix}@celebration.io`);
+    await page.getByLabel(/password/i).fill('SecurePass123!');
+    await page.getByRole('button', { name: /create account/i }).click();
 
     // Verify navigation to /dashboard
     await expect(page).toHaveURL(/.*dashboard/, { timeout: 10000 });
@@ -52,7 +58,7 @@ test.describe('End-to-End User Journey: Celebration & Event Planner', () => {
     await expect(generateButton).toBeVisible();
     await generateButton.click();
 
-    // Verify Plan loaded (either Live Gemini or transparent Demo Fallback)
+    // Verify Plan loaded (either Live Gemini or curated blueprint)
     await expect(page.locator('text=Theme Concept & Atmosphere')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('text=Recommended Budget Allocation')).toBeVisible();
 

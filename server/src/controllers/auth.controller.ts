@@ -2,6 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { User } from '../models/User.js';
+import { Event } from '../models/Event.js';
+import { Expense } from '../models/Expense.js';
+import { Task } from '../models/Task.js';
+import { Vendor } from '../models/Vendor.js';
+import { AiPlan } from '../models/AiPlan.js';
 import { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 
 function generateToken(userId: string): string {
@@ -94,6 +99,73 @@ export async function getMe(req: AuthenticatedRequest, res: Response, next: Next
         name: req.user.name,
         email: req.user.email
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteAccount(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const userId = req.user!._id;
+    const events = await Event.find({ userId });
+    const eventIds = events.map((e) => e._id);
+
+    await Promise.all([
+      Expense.deleteMany({ $or: [{ userId }, { eventId: { $in: eventIds } }] }),
+      Task.deleteMany({ $or: [{ userId }, { eventId: { $in: eventIds } }] }),
+      Vendor.deleteMany({ $or: [{ userId }, { eventId: { $in: eventIds } }] }),
+      AiPlan.deleteMany({ $or: [{ userId }, { eventId: { $in: eventIds } }] }),
+      Event.deleteMany({ userId }),
+      User.findByIdAndDelete(userId)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'User account and all associated celebrations deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function cleanupQueryData(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { pattern } = req.body;
+    const searchRegex = new RegExp(pattern || 'priya', 'i');
+
+    const users = await User.find({
+      $or: [{ name: searchRegex }, { email: searchRegex }]
+    });
+
+    const userIds = users.map((u) => u._id);
+    const events = await Event.find({
+      $or: [{ userId: { $in: userIds } }, { title: searchRegex }]
+    });
+    const eventIds = events.map((e) => e._id);
+
+    await Promise.all([
+      Expense.deleteMany({ $or: [{ userId: { $in: userIds } }, { eventId: { $in: eventIds } }] }),
+      Task.deleteMany({ $or: [{ userId: { $in: userIds } }, { eventId: { $in: eventIds } }] }),
+      Vendor.deleteMany({ $or: [{ userId: { $in: userIds } }, { eventId: { $in: eventIds } }] }),
+      AiPlan.deleteMany({ $or: [{ userId: { $in: userIds } }, { eventId: { $in: eventIds } }] }),
+      Event.deleteMany({ _id: { $in: eventIds } }),
+      User.deleteMany({ _id: { $in: userIds } })
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: `Cleaned up ${users.length} users and ${events.length} events matching '${pattern || 'priya'}'`,
+      deletedUsersCount: users.length,
+      deletedEventsCount: events.length
     });
   } catch (error) {
     next(error);

@@ -19,6 +19,7 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = 'lg'
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const isMouseDownOnBackdrop = useRef(false);
   const titleId = useId();
   const descId = useId();
 
@@ -63,8 +64,14 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+      onMouseDown={(e) => {
+        isMouseDownOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onMouseUp={(e) => {
+        if (isMouseDownOnBackdrop.current && e.target === e.currentTarget) {
+          onClose();
+        }
+        isMouseDownOnBackdrop.current = false;
       }}
     >
       <div
@@ -73,6 +80,8 @@ export const Modal: React.FC<ModalProps> = ({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descId : undefined}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className={`bg-white w-full ${maxWidthClasses[maxWidth]} rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all motion-reduce:transition-none my-8`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
