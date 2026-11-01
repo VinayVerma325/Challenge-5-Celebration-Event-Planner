@@ -20,6 +20,7 @@ import { EmptyState } from '../EmptyState.js';
 import { LoadingSkeleton } from '../LoadingSkeleton.js';
 import { Alert } from '../Alert.js';
 import { formatDate } from '../../utils/formatters.js';
+import { getErrorMessage } from '../../utils/error.js';
 
 interface TimelineTabProps {
   event: EventItem;
@@ -62,8 +63,8 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ event }) => {
         setTasks(res.tasks);
         setMetrics(res.taskMetrics);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load checklist tasks');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load checklist tasks'));
     } finally {
       setIsLoading(false);
     }
@@ -103,8 +104,8 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ event }) => {
     try {
       await taskService.toggle(event._id, task._id);
       loadTasks();
-    } catch (err: any) {
-      setError(err.message || 'Failed to update task status');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to update task status'));
     }
   };
 
@@ -130,8 +131,8 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ event }) => {
       }
       setIsModalOpen(false);
       loadTasks();
-    } catch (err: any) {
-      setError(err.message || 'Failed to save task');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to save task'));
     } finally {
       setIsSubmitting(false);
     }
@@ -143,8 +144,8 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ event }) => {
       await taskService.delete(event._id, id);
       setSuccessMsg('Task deleted');
       loadTasks();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete task');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to delete task'));
     }
   };
 

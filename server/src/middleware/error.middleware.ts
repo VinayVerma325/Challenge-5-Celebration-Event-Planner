@@ -3,7 +3,7 @@ import { env } from '../config/env.js';
 
 export interface AppError extends Error {
   statusCode?: number;
-  errors?: any;
+  errors?: Record<string, unknown> | Array<unknown>;
 }
 
 export function errorHandler(

@@ -18,6 +18,7 @@ import { Input } from '../components/Input.js';
 import { Select } from '../components/Select.js';
 import { Alert } from '../components/Alert.js';
 import { LoadingSkeleton } from '../components/LoadingSkeleton.js';
+import { getErrorMessage } from '../utils/error.js';
 import { OverviewTab } from '../components/tabs/OverviewTab.js';
 import { AiPlannerTab } from '../components/tabs/AiPlannerTab.js';
 import { BudgetTab } from '../components/tabs/BudgetTab.js';
@@ -74,8 +75,8 @@ export const EventDetailPage: React.FC = () => {
           status: res.event.status
         });
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load celebration details');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load celebration details'));
     } finally {
       setIsLoading(false);
     }
@@ -98,8 +99,8 @@ export const EventDetailPage: React.FC = () => {
       await eventService.update(id, editFormData);
       setIsEditModalOpen(false);
       loadEvent();
-    } catch (err: any) {
-      setError(err.message || 'Failed to update celebration details');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to update celebration details'));
     } finally {
       setIsSubmitting(false);
     }
@@ -117,8 +118,8 @@ export const EventDetailPage: React.FC = () => {
     try {
       await eventService.delete(id);
       navigate('/events');
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete event');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to delete event'));
     }
   };
 

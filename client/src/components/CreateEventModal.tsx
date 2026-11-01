@@ -7,6 +7,7 @@ import { Button } from './Button.js';
 import { Input } from './Input.js';
 import { Select } from './Select.js';
 import { Alert } from './Alert.js';
+import { getErrorMessage } from '../utils/error.js';
 
 interface CreateEventModalProps {
   isOpen: boolean;
@@ -89,8 +90,8 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
           navigate(`/events/${res.event._id}`);
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to create celebration event');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to create celebration event'));
     } finally {
       setIsSubmitting(false);
     }

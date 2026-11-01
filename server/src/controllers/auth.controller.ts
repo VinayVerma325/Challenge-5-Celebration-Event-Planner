@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { User } from '../models/User.js';
 import { Event } from '../models/Event.js';
@@ -10,9 +10,10 @@ import { AiPlan } from '../models/AiPlan.js';
 import { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 
 function generateToken(userId: string): string {
-  return jwt.sign({ id: userId }, env.JWT_SECRET, {
-    expiresIn: env.JWT_EXPIRES_IN as any
-  });
+  const options: SignOptions = {
+    expiresIn: (env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn']
+  };
+  return jwt.sign({ id: userId }, env.JWT_SECRET, options);
 }
 
 export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {

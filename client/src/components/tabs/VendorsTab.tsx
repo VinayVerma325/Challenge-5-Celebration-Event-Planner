@@ -21,6 +21,7 @@ import { EmptyState } from '../EmptyState.js';
 import { LoadingSkeleton } from '../LoadingSkeleton.js';
 import { Alert } from '../Alert.js';
 import { formatCurrency } from '../../utils/formatters.js';
+import { getErrorMessage } from '../../utils/error.js';
 
 interface VendorsTabProps {
   event: EventItem;
@@ -67,8 +68,8 @@ export const VendorsTab: React.FC<VendorsTabProps> = ({ event }) => {
         setVendors(res.vendors);
         setSummary(res.vendorSummary);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load vendors');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load vendors'));
     } finally {
       setIsLoading(false);
     }
@@ -130,8 +131,8 @@ export const VendorsTab: React.FC<VendorsTabProps> = ({ event }) => {
       }
       setIsModalOpen(false);
       loadVendors();
-    } catch (err: any) {
-      setError(err.message || 'Failed to save vendor');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to save vendor'));
     } finally {
       setIsSubmitting(false);
     }
@@ -143,8 +144,8 @@ export const VendorsTab: React.FC<VendorsTabProps> = ({ event }) => {
       await vendorService.delete(event._id, id);
       setSuccessMsg('Vendor removed');
       loadVendors();
-    } catch (err: any) {
-      setError(err.message || 'Failed to remove vendor');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to remove vendor'));
     }
   };
 

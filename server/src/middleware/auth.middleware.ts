@@ -44,7 +44,7 @@ export async function authenticate(
 
     req.user = user;
     next();
-  } catch (error: any) {
+  } catch {
     res.status(401).json({
       success: false,
       message: 'Invalid or expired authentication token.'

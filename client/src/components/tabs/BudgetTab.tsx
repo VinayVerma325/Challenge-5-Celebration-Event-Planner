@@ -19,6 +19,7 @@ import { EmptyState } from '../EmptyState.js';
 import { LoadingSkeleton } from '../LoadingSkeleton.js';
 import { Alert } from '../Alert.js';
 import { formatCurrency } from '../../utils/formatters.js';
+import { getErrorMessage } from '../../utils/error.js';
 
 interface BudgetTabProps {
   event: EventItem;
@@ -66,8 +67,8 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ event }) => {
         setExpenses(res.expenses);
         setBudgetSummary(res.budgetSummary);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load expenses');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load expenses'));
     } finally {
       setIsLoading(false);
     }
@@ -121,8 +122,8 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ event }) => {
       }
       setIsModalOpen(false);
       loadExpenses();
-    } catch (err: any) {
-      setError(err.message || 'Failed to save expense');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to save expense'));
     } finally {
       setIsSubmitting(false);
     }
@@ -134,8 +135,8 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ event }) => {
       await expenseService.delete(event._id, id);
       setSuccessMsg('Expense deleted successfully');
       loadExpenses();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete expense');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to delete expense'));
     }
   };
 

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.js';
 import { Input } from '../components/Input.js';
 import { Button } from '../components/Button.js';
 import { Alert } from '../components/Alert.js';
+import { getErrorMessage } from '../utils/error.js';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,8 +24,8 @@ export const LoginPage: React.FC = () => {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Invalid email or password'));
     } finally {
       setIsLoading(false);
     }

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.js';
 import { Input } from '../components/Input.js';
 import { Button } from '../components/Button.js';
 import { Alert } from '../components/Alert.js';
+import { getErrorMessage } from '../utils/error.js';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -30,8 +31,8 @@ export const RegisterPage: React.FC = () => {
     try {
       await register(name, email, password);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Registration failed. Please check your details.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Registration failed. Please check your details.'));
     } finally {
       setIsLoading(false);
     }

@@ -19,6 +19,7 @@ import { LoadingSkeleton } from '../components/LoadingSkeleton.js';
 import { Alert } from '../components/Alert.js';
 import { CreateEventModal } from '../components/CreateEventModal.js';
 import { formatCurrency, formatDate, getEventTypeBadge } from '../utils/formatters.js';
+import { getErrorMessage } from '../utils/error.js';
 
 export const EventsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -52,8 +53,8 @@ export const EventsPage: React.FC = () => {
       if (res.success) {
         setEvents(res.events);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch events');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to fetch events'));
     } finally {
       setIsLoading(false);
     }

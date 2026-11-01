@@ -16,6 +16,7 @@ import { Button } from '../Button.js';
 import { Card } from '../Card.js';
 import { Alert } from '../Alert.js';
 import { formatCurrency } from '../../utils/formatters.js';
+import { getErrorMessage } from '../../utils/error.js';
 
 interface AiPlannerTabProps {
   event: EventItem;
@@ -73,8 +74,8 @@ export const AiPlannerTab: React.FC<AiPlannerTabProps> = ({ event, onPlanApplied
         setDisclaimer(res.disclaimer);
         setMessage(res.message);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate AI plan');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to generate AI plan'));
     } finally {
       setIsLoading(false);
     }
@@ -98,8 +99,8 @@ export const AiPlannerTab: React.FC<AiPlannerTabProps> = ({ event, onPlanApplied
         setMessage('Plan successfully applied to event! Budget items, tasks, and vendors were updated.');
         onPlanApplied();
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to apply plan');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to apply plan'));
     } finally {
       setIsApplying(false);
     }
