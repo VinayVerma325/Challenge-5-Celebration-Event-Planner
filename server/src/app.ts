@@ -2,6 +2,8 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
+import fs from 'fs';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/error.middleware.js';
 
@@ -16,11 +18,11 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 export function createApp(): Express {
   const app = express();
 
-  // Security headers & basic middleware
-  app.use(helmet());
+  // Security headers & CORS middleware
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.use(
     cors({
-      origin: [env.CLIENT_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+      origin: true,
       credentials: true
     })
   );
@@ -48,6 +50,16 @@ export function createApp(): Express {
   app.use('/api/events/:eventId/vendors', vendorRoutes);
   app.use('/api/events/:eventId/ai', aiRoutes);
   app.use('/api/dashboard', dashboardRoutes);
+
+  // Serve static client assets if built (for all-in-one cloud deployments)
+  const clientDist = path.resolve(process.cwd(), 'client/dist');
+  if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+    app.get('*', (req: Request, res: Response, next) => {
+      if (req.path.startsWith('/api')) return next();
+      res.sendFile(path.join(clientDist, 'index.html'));
+    });
+  }
 
   // 404 handler for unmatched routes
   app.use((req: Request, res: Response) => {
